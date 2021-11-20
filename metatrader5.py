@@ -1,7 +1,12 @@
+#merge request update1
 from datetime import datetime
 import MetaTrader5 as mt5
 import pandas
 import pytz
+from loguru import logger
+
+logger.add('debug.log',format="{time} {level} {message}", level="DEBUG",
+rotation="100 KB", compression="zip" )
 
 barsAmount = 99000
 timezone = pytz.timezone("Etc/UTC")
@@ -19,8 +24,8 @@ def get_prices_for_whole_period():
     high_price = rates_frame[[HIGH]]
     low_price = rates_frame[[LOW]]
     bar_size = high_price[HIGH] - low_price[LOW]
-    print(f'Максимальная свеча за весь период: {round(bar_size.max(), round_num)}')
-    print(f'Минимальная свеча за весь период: {round(bar_size.min(), round_num)}')
+    logger.debug(f'Максимальная свеча за весь период: {round(bar_size.max(), round_num)}')
+    logger.debug(f'Минимальная свеча за весь период: {round(bar_size.min(), round_num)}')
 
 
 def get_prices_for_quarter(year, time_from, time_to, quarter):
@@ -30,8 +35,8 @@ def get_prices_for_quarter(year, time_from, time_to, quarter):
     high_price = rates_frame[[HIGH]]
     low_price = rates_frame[[LOW]]
     bar_size = high_price[HIGH] - low_price[LOW]
-    print(f'Максимальная свеча за {quarter} квартал {year} года: {round(bar_size.max(), round_num)}')
-    print(f'Минимальная свеча за {quarter} квартал {year} года: {round(bar_size.min(), round_num)}')
+    logger.debug(f'Максимальная свеча за {quarter} квартал {year} года: {round(bar_size.max(), round_num)}')
+    logger.debug(f'Минимальная свеча за {quarter} квартал {year} года: {round(bar_size.min(), round_num)}')
 
 
 def get_prices_for_quarters():
@@ -46,13 +51,13 @@ def get_prices_for_quarters():
 
 
 if not mt5.initialize():
-    print(f'Ошибка инициализации MetaTrader5: {mt5.last_error()}')
+    logger.debug('Ошибка инициализации MetaTrader5: {mt5.last_error()}')
     quit()
 
-print('Найти максимальную и минимальную свечи на весь период по EURUSD')
+logger.debug('Найти максимальную и минимальную свечи на весь период по EURUSD')
 get_prices_for_whole_period()
 
-print('\nНайти максимальную и минимальную свечи за каждый квартал по EURUSD')
+logger.debug('\nНайти максимальную и минимальную свечи за каждый квартал по EURUSD')
 get_prices_for_quarters()
 
 mt5.shutdown()
